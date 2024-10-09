@@ -29,8 +29,26 @@ class Game:                          # Game object
 
 class Player:
     def __init__(self) -> None:
-        self.stake: bool = None
+        self.stake: int = 0
+        self.balance: int = 0
+        self.is_active: bool = False
+        self.all_in: bool = False
         self.hand: Tuple[Type[Card]] = ()
+
+    def can_check(self):
+        pass
+
+    def call(self):
+        pass
+
+    def raise_bet(self):
+        pass
+
+    def fold(self):
+        pass
+
+    def check(self):
+        pass
 
     
 class Action:
