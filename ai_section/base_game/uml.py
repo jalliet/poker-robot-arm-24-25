@@ -35,7 +35,7 @@ class State(Enum):
 class Player:
     #player class
 
-    def __init__(self, label)
+    def __init__(self, label):
         self.wallet = 0
         self.currentBet = 0 
         self.actionsTaken = []
