@@ -45,22 +45,27 @@ class Player:
     #Game Actions
     def check(self):
         #performs the check action
+        pass
 
     def bet(self, n):
         #add money to the pot
+        pass
 
     def raiseBet(self, n):
         #raises pot by amount n
+        pass
 
     def fold(self, showCards=False):
         #action fold with boolean to show cards
+        pass
 
     #Self Checks
     def possibleActions(self):
         #returns all possible actions
+        pass
 
     def printPlayerStats(self):
-        
+        pass
     
     def getPlayerHand(self):
         #returns hand of the player
@@ -75,6 +80,7 @@ class Player:
     #Misc
     def Action(self):
         #called whenever an action is taken
+        pass
     
     def loadPlayer(self, currentBet, actionsTaken, hand, position):
         #load a player state 
@@ -112,20 +118,20 @@ class Card:
         if (self.value > 9 or self.value == 1):
             match (self.value):
                 case 1:
-                displayString += "Unknown"
-                break
+                    displayString += "Unknown"
+                    
                 case 11:
-                displayString += "Jack"
-                break
+                    displayString += "Jack"
+                    
                 case 12:
-                displayString += "Queen"
-                break
+                    displayString += "Queen"
+                    
                 case 13:
-                displayString += "King"
-                break
+                    displayString += "King"
+                    
                 case 14:
-                displayString += "Ace"
-                break
+                    displayString += "Ace"
+                    
         else:
             displayString += str(self.value)
         
@@ -134,24 +140,24 @@ class Card:
         match (self.suit):
             case Suit.SPADES:
                 displayString += "Spades"
-                break
+                
             case Suit.DIAMONDS:
                 displayString += "Diamonds"
-                break
+                
             case Suit.HEARTS:
                 displayString += "Hearts"
-                break
+                
             case Suit.CLUBS:
                 displayString += "Clubs"
-                break
-            case Suit.UNKNOWN
+                
+            case Suit.UNKNOWN:
                 displayString = ""
         print(displayString)
 
 
 class Game:
     #handles gameplay
-    def __init__ (self)
+    def __init__ (self):
         self.state = State(ANTE)
         self.pot = 0
         self.currentPlayer = None
@@ -163,63 +169,78 @@ class Game:
     #setup
     def addPlayers(self, players):
         #adds the player objects to the list
+        pass
     
     def addPlayer(self, player, position=-1):
         #adds one player to the queue (defaults to last place)
         #can only be done before dealing cards
+        pass
 
     def removePlayer (self, player):
         #removes a player if they leave the table
+        pass
     
     def startGame (self, ante=False):
         #setup to start the game
-        
+        pass
         #shuffle cards
         #start the ante (if desired)
     def shuffle_cards(self):
         #shuffles the card deck
+        pass
 
     def draw_card(self, card=None):
         #draws card from the deck
         #if card provided, will draw that card from the deck
+        pass
     
     def nextPlayer(self, player):
         #switches the current player to the next in queue
+        pass
     
     def getCurrentPlayer(self):
         #returns the current player
+        pass
     
     def recievePlayerAction(self):
         #takes action of curentPlayer
+        pass
 
 
     def raisePot(self, n):
         #raise the pot by n
-
+        pass
 
 
     def ante(self):
         #optional initial betting round
+        pass
 
     def dealHands(self):
         #gives cards to all players
+        pass
     
     def flop(self):
         #draws 3 cards from the deck to show to players
+        pass
     
     def turn(self):
         #draws a 4th card from the deck
+        pass
     
     def river(self):
         #draws the final card from the deck
+        pass
     
 
     def compareCards(self):
         #compares all cards in players hands
         #to be done after the river
+        pass
     
     def payout(self):
         #pays the contents of the pot to players
+        pass
 
 
     
