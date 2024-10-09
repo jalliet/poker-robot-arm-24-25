@@ -8,22 +8,22 @@ class Game:                          # Game object
         self.actions: List[Type[Action]] = []            # History of actions throughout the game
         self.call_amount: int = -1        # Minimum amount to call
         
-    def deal():                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
+    def deal(self):                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
         pass
 
-    def flop():                      # First three community cards are flipped over
+    def flop(self):                      # First three community cards are flipped over
         pass
 
-    def turn(): 
+    def turn(self): 
         pass
 
-    def river():
+    def river(self):
         pass
     
-    def get_pot():
+    def get_pot(self):
         pass
     
-    def evaluate_hands():
+    def evaluate_hands(self):
         pass
 
 
@@ -31,6 +31,7 @@ class Player:
     def __init__(self) -> None:
         self.stake: bool = None
         self.hand: Tuple[Type[Card]] = ()
+
     
 class Action:
     def __init__(self) -> None:
@@ -50,5 +51,5 @@ class Card:
         return string
         
 
-if __name__ == "__main__":
-    full_deck = List[Type[Card]]
+
+full_deck = List[Type[Card]]
