@@ -1,4 +1,5 @@
 from typing import List, Set, Dict, Tuple, Type
+from hands import *
 
 class Game:                          # Game object
     def __init__(self) -> None:
@@ -23,8 +24,17 @@ class Game:                          # Game object
     def get_pot():
         pass
     
-    def evaluate_hands():
-        pass
+    def evaluate_hands(self, hands):
+        # royal flush
+        if self.check_for_hand(isRoyalFlush, hands) != []:
+            return self.check_for_hand(hands)[0]
+    
+    def check_for_hand(condition_func, hands):
+        true_hands = []
+        for hand in hands:
+            if condition_func(hand):
+                true_hands.append(hand)
+        return true_hands
 
 
 class Player:
