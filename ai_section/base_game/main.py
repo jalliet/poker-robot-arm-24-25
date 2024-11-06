@@ -8,6 +8,8 @@ class Game:                          # Game object
         self.actions: List[Type[Action]] = []            # History of actions throughout the game
         self.call_amount: int = -1        # Minimum amount to call
         self.game_pot = 0
+        self.cur_player = 0
+        self.progress_counter = 0
         
     def deal():                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
         pass
@@ -26,6 +28,12 @@ class Game:                          # Game object
     
     def evaluate_hands():
         pass
+    
+    def set_player(self, num):
+        i = 0
+        for x in range(num):
+            self.add_player(x)
+        
     
     def add_player(self, id):
         self.players.append(Player(id))
