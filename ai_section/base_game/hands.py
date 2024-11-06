@@ -1,2 +1,0 @@
-def isRoyalFlush(hand):
-    pass

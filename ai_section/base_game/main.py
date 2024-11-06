@@ -1,5 +1,5 @@
 from typing import List, Set, Dict, Tuple, Type
-from hands import *
+from treys import Card as TreyCard, Evaluator
 
 class Game:                          # Game object
     def __init__(self) -> None:
@@ -25,16 +25,15 @@ class Game:                          # Game object
         pass
     
     def evaluate_hands(self, hands):
-        # royal flush
-        if self.check_for_hand(isRoyalFlush, hands) != []:
-            return self.check_for_hand(hands)[0]
-    
-    def check_for_hand(condition_func, hands):
-        true_hands = []
+        _community_cards = []
+        for card in self.community_cards:
+            _community_cards.append(TreyCard.new(str(card)))
+        
+        hand_scores = {}
         for hand in hands:
-            if condition_func(hand):
-                true_hands.append(hand)
-        return true_hands
+            hand = [TreyCard.new(str(hand[0])), TreyCard.new(str(hand[1]))]
+            hand_scores[hand] = Evaluator.evaluate(_community_cards, hand)
+
 
 
 class Player:
