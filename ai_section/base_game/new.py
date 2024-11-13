@@ -28,18 +28,11 @@ class Game:                          # Game object
         self.call_amount: int = -1        # Minimum amount to call
         self.game_pot = 0
         self.cur_player = 0
-        self.progress_counter = 0
+        self.progress_count = 0
+        self.fold_count = 0
+        self.round = 0
         
     def deal():                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
-        pass
-
-    def flop():                      # First three community cards are flipped over
-        pass
-
-    def turn(): 
-        pass
-
-    def river():
         pass
     
     def get_pot():
@@ -47,6 +40,39 @@ class Game:                          # Game object
     
     def evaluate_hands():
         pass
+    
+    def end_round(self):
+        self.round += 1
+        if self.round == 1:
+            # send flop to kinematics
+            pass
+        elif self.round == 2:
+            # send turn to kinematics
+            pass
+        elif self.round == 3:
+            # send river to kinematics
+            pass
+        elif self.round == 4:
+            # do showdown
+            pass
+        self.progress_count = 0
+        
+    
+    def check_end_of_round(self):
+        if self.progress_count == len(self.players) - 1:
+            self.end_round()
+        
+    def process_turn(self, action: str, player, n=0):
+        match action: 
+            case "call":
+                self.progress_count += 1
+            case "check":
+                self.progress_count += 1
+            case "raise":
+                self.raiseBet(player, n)
+                self.progress_count = 0
+
+        
     
     def set_player(self, num, id):      # Input number of players from cv team (including player id)
         i = 0
