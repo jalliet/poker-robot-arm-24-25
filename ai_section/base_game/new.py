@@ -1,5 +1,28 @@
 from typing import List, Set, Dict, Tuple, Type
 
+'''
+Round Steps:
+
+
+Initialization:
+1. Set players from CV, retrieve their ID
+2. Append players to list
+3. Set cards list
+4. Deal cards
+5. Initial bet by all players (assuming they have money ready), add to pot
+6. Asks player for actions, retrieve action
+
+Possible actions example:
+Raise, call, call - end
+Check, check, raise - call, call, skip - end
+Check, check, check - end
+Raise, raise, call - call, skip, skip - end
+Check, raise, raise - call, call, skip - end
+
+
+
+'''
+
 class Game:                          # Game object
     def __init__(self) -> None:
         self.deck = full_deck
@@ -29,15 +52,15 @@ class Game:                          # Game object
     def evaluate_hands():
         pass
     
-    def set_player(self, num):
+    def set_player(self, num, id):      # Input number of players from cv team (including player id)
         i = 0
         for x in range(num):
-            self.add_player(x)
+            self.add_player(id)
     
     def add_player(self, id):
         self.players.append(Player(id))
         
-    def check(self, player):
+    def check(self, player):    # Checks if player needs to stake
         highest_stake = 0
         for people in self.players:
             if people.stake > highest_stake:
@@ -46,24 +69,35 @@ class Game:                          # Game object
         if player.stake < highest_stake:
             return -1
         return 0
-
-    def bet(self, player, n):
-        if self.wallet < n:
+    
+    def bet(self, player, n):       # Betting (input player and bet amount)
+        if player.wallet < n:
             return -1
         player.stake += n
         player.wallet -= n
         self.game_pot += n
         return 0
 
-    def raiseBet(self, player, n):
-        if self.wallet < n:
+    def raiseBet(self, player, n):      # Raise (input player and bet amount)
+        if player.wallet < n:
             return -1
         player.stake += n
         player.wallet -= n
         self.game_pot += n
         return 0
+    
+    def call(self, player, highest_stake):      # Call
+        change = highest_stake - player.stake
+        if self.wallet < change:
+            return -1
+        player.
+        self.game_pot += highest_stake - player.stake
+        player.stake = highest_stake
+        return 0
+        
+        
 
-    def fold(self, player, showCards=False):
+    def fold(self, player, showCards=False):        # Fold, remove players (may add an option to show cards)
         self.players.remove(player)
         
     def startGame (self):
