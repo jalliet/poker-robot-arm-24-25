@@ -1,9 +1,6 @@
 from typing import List, Set, Dict, Tuple, Type
 
 '''
-Round Steps:
-
-
 Initialization:
 1. Set players from CV, retrieve their ID
 2. Append players to list
@@ -19,8 +16,7 @@ Check, check, check - end
 Raise, raise, call - call, skip, skip - end
 Check, raise, raise - call, call, skip - end
 
-
-
+When ended, advance to next round
 '''
 
 class Game:                          # Game object
@@ -90,13 +86,10 @@ class Game:                          # Game object
         change = highest_stake - player.stake
         if self.wallet < change:
             return -1
-        player.
         self.game_pot += highest_stake - player.stake
         player.stake = highest_stake
         return 0
         
-        
-
     def fold(self, player, showCards=False):        # Fold, remove players (may add an option to show cards)
         self.players.remove(player)
         
