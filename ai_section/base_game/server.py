@@ -30,6 +30,8 @@ class ArmServer(BaseHTTPRequestHandler):
         match post_data["type"]:
             case "action":
                 self.game.process_turn(post_data["action"], post_data["player"], post_data["amount"])
+            case "setPlayer":
+                self.game.set_player(post_data["player_count"])
         
         
 if __name__ == "__main__":

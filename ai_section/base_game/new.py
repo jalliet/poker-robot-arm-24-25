@@ -74,9 +74,9 @@ class Game:                          # Game object
 
         
     
-    def set_player(self, num, id):      # Input number of players from cv team (including player id)
+    def set_player(self, num):      # Input number of players from cv team (including player id)
         i = 0
-        for x in range(num):
+        for id in range(num):
             self.add_player(id)
     
     def add_player(self, id):
