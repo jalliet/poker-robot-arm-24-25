@@ -1,15 +1,19 @@
+from time import sleep
 import requests
 # Change server to ip of poker ai server
-SERVER = "http://0.0.0.0:666/"
+SERVER = "http://localhost:666/"
 
-while True:
-    print("What move has been conducted?")
-    move = input("").lower()
-    match move:
-        case "fold": 
-            requests.post(SERVER, json={"move":"fold"})
-        case "check":
-            requests.post(SERVER, json={"move":"check"})
-        case "raise":
-            amount = input("What is the stake?")
-            requests.post(SERVER, json={"move":"raise", "amount":amount})
+with open("./ai_section/game.txt") as file:
+    lines = [line.rstrip() for line in file]
+
+for line in lines:
+    type, player, action, amount = line.split(",")
+    
+    match type:
+        case "setPlayers": 
+            requests.post(SERVER, json={"type":"setPlayers", "player_count":player})
+        case "action":
+            requests.post(SERVER, json={"type":"action", "action":action, "player":player, "amount":amount})
+            
+    sleep(1)
+        

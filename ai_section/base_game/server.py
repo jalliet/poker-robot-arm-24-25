@@ -6,43 +6,49 @@ import json
 hostName = "localhost"
 serverPort = 666
 
+# Define a custom HTTPServer to pass attributes
+class ArmHTTPServer(HTTPServer):
+    def __init__(self, server_address, handler_class, game):
+        super().__init__(server_address, handler_class)
+        self.game = game
+
 class ArmServer(BaseHTTPRequestHandler):
-    def __init__(self, request, client_address, server):
-        super().__init__(request, client_address, server)
-        self.game = new.Game()
-        
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type","text/html")
+        self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(bytes("<html><head><title>Arm Server Page</title></head>", "utf-8"))
-        #self.wfile.write(bytes("<p>Request: %s</p>" %self.path, "utf-8"))
-        self.wfile.write(bytes("<body><p>This is the Arm Server.</p> </body>","utf-8"))
-        self.wfile.write(bytes("</html>","utf-8"))
-        
+        self.wfile.write(bytes("<body><p>This is the Arm Server.</p></body>", "utf-8"))
+        self.wfile.write(bytes("</html>", "utf-8"))
+
     def do_POST(self):
-        print("ARM: Recieved POST")
+        print("ARM: Received POST")
         content_length = int(self.headers['Content-length'])
         post_data_bytes = self.rfile.read(content_length)
-        print("ARM: %d" % post_data_bytes)
         post_data = json.loads(post_data_bytes.decode('utf-8'))
+        print(str(post_data))
+
+        # Access the game object from the server instance
+        game = self.server.game
         
         match post_data["type"]:
             case "action":
-                self.game.process_turn(post_data["action"], post_data["player"], post_data["amount"])
+                game.process_turn(post_data["action"], post_data["player"], post_data["amount"])
             case "setPlayer":
-                self.game.set_player(post_data["player_count"])
-        
-        
-if __name__ == "__main__":
-    webServer = HTTPServer((hostName, serverPort), ArmServer)
-    print("Server started http://%s:%s$ "% (hostName, serverPort))
+                game.set_player(post_data["player_count"])
 
-    try: 
+if __name__ == "__main__":
+    # Initialize your Game instance
+    my_game = new.Game()
+    
+    # Create the server and pass the Game instance
+    webServer = ArmHTTPServer((hostName, serverPort), ArmServer, my_game)
+    print("Server started http://%s:%s" % (hostName, serverPort))
+
+    try:
         webServer.serve_forever()
     except KeyboardInterrupt:
         pass
 
     webServer.server_close()
     print("Server stopped.")
-        
