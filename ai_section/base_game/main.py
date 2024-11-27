@@ -7,6 +7,9 @@ class Game:                          # Game object
         self.players: List[Type[Player]] = []
         self.actions: List[Type[Action]] = []            # History of actions throughout the game
         self.call_amount: int = -1        # Minimum amount to call
+        self.game_pot = 0
+        self.cur_player = 0
+        self.progress_counter = 0
         
     def deal():                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
         pass
@@ -25,10 +28,51 @@ class Game:                          # Game object
     
     def evaluate_hands():
         pass
+    
+    def set_player(self, num):
+        i = 0
+        for x in range(num):
+            self.add_player(x)
+        
+    
+    def add_player(self, id):
+        self.players.append(Player(id))
+        
+    def check(self, player):
+        
+        highest_stake = 0
+        for people in self.players:
+            if people.stake > highest_stake:
+                highest_stake = people.stake
+        
+        if player.stake < highest_stake:
+            return -1
+        return 0
+
+    def bet(self, player, n):
+        if self.wallet < n:
+            return -1
+        player.stake += n
+        player.wallet -= n
+        self.game_pot += n
+        return 0
+
+    def raiseBet(self, player, n):
+        if self.wallet < n:
+            return -1
+        player.stake += n
+        player.wallet -= n
+        return 0
+
+    def fold(self, player, showCards=False):
+        self.players.remove(player)
+        
 
 
 class Player:
-    def __init__(self) -> None:
+    def __init__(self, id, init_cash) -> None: # Added ID for players
+        self.id = id
+        self.wallet = init_cash
         self.stake: bool = None
         self.hand: Tuple[Type[Card]] = ()
     
@@ -52,3 +96,13 @@ class Card:
 
 if __name__ == "__main__":
     full_deck = List[Type[Card]]
+    players = List[Type[Player]]
+    
+    num_of_players = 4
+    
+    for i in range(len(num_of_players)):
+        players.append(Player(id))
+    
+    
+    
+    
