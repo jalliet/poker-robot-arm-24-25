@@ -170,13 +170,13 @@ class Action:
         pass
         
 class Card:
-    def __init__(self, num: int, suit: str) -> None:
-        self.num = num  # 1-10 is A-10, J: 11, Q:12, K:13
-        self.suit = suit # Character representing the suit
+    def __init__(self, val: int, suit: str) -> None:
+        self.val = val  # 1 char symbols are unchanged, 10 is T
+        self.suit = suit.lower() # Character representing the suit
         self.public: bool = False
 
     def __repr__(self) -> str:
-        string = str(self.num) + self.suit
+        string = str(self.val) + self.suit
 
         if len(string) < 3:      # Ensures the output is always 3 characters long
             return "0" + string
