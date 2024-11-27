@@ -3,7 +3,7 @@ import time
 import new
 import json
 
-hostName = "http://10.205.40.176:666/"
+hostName = "localhost"
 serverPort = 666
 
 class ArmServer(BaseHTTPRequestHandler):
