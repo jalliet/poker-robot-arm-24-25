@@ -89,6 +89,9 @@ class Game:                          # Game object
             self.end_round()
         
     def process_turn(self, action: str, player, n=0):
+        print(self.players)
+        player = self.players[int(player)]
+        
         match action: 
             case "call":
                 self.progress_count += 1
@@ -101,7 +104,6 @@ class Game:                          # Game object
         
     
     def set_player(self, num):      # Input number of players from cv team (including player id)
-        i = 0
         for id in range(num):
             self.add_player(id)
     
@@ -176,7 +178,7 @@ class Game:                          # Game object
 
 
 class Player:
-    def __init__(self, id, init_cash) -> None: # Added ID for players
+    def __init__(self, id, init_cash=100) -> None: # Added ID for players
         self.id = id
         self.wallet = init_cash
         self.stake: bool = None
