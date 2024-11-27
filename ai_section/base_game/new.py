@@ -53,33 +53,29 @@ class Game:                          # Game object
         self.fold_count = 0
         self.round = 0
         
-    def deal():       # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
+    
+    def get_pot(self):
         pass
     
-    def get_pot():
-        pass
-    
-    def evaluate_hands(self, hands):
-        pass
-        _community_cards = []
-        for card in self.community_cards:
-            _community_cards.append(TreyCard.new(str(card)))
-        
+    def evaluate_hands(self):        
         hand_scores = {}
-        for hand in hands:
-            hand = [TreyCard.new(str(hand[0])), TreyCard.new(str(hand[1]))]
-            hand_scores[hand] = Evaluator.evaluate(_community_cards, hand)
+        for player in self.players:
+            hand = player.hand
+            hand_scores[hand] = Evaluator.evaluate(self.community_cards, hand)
             
     
     def end_round(self):
         self.round += 1
         if self.round == 1:
+            self.community_cards.append(self.deck.draw(3))
             # send flop to kinematics
             pass
         elif self.round == 2:
+            self.community_cards.append(self.deck.draw(1))
             # send turn to kinematics
             pass
         elif self.round == 3:
+            self.community_cards.append(self.deck.draw(1))
             # send river to kinematics
             pass
         elif self.round == 4:
@@ -184,7 +180,7 @@ class Player:
         self.id = id
         self.wallet = init_cash
         self.stake: bool = None
-        self.hand: Tuple[Type[Card]] = ()
+        self.hand: list[Type[Card]] = []
 
     def __repr__(self) -> str:
         return "Player: ID = " + self.id
