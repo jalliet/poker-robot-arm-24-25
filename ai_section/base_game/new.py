@@ -1,4 +1,5 @@
 from typing import List, Set, Dict, Tuple, Type
+from treys import Card as TreyCard, Evaluator
 
 '''
 Initialization:
@@ -38,8 +39,16 @@ class Game:                          # Game object
     def get_pot():
         pass
     
-    def evaluate_hands():
-        pass
+    def evaluate_hands(self, hands):
+        _community_cards = []
+        for card in self.community_cards:
+            _community_cards.append(TreyCard.new(str(card)))
+        
+        hand_scores = {}
+        for hand in hands:
+            hand = [TreyCard.new(str(hand[0])), TreyCard.new(str(hand[1]))]
+            hand_scores[hand] = Evaluator.evaluate(_community_cards, hand)
+            
     
     def end_round(self):
         self.round += 1
