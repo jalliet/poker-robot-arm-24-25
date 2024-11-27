@@ -1,5 +1,25 @@
-from typing import List, Set, Dict, Tuple, Type
-from treys import Card as TreyCard, Evaluator
+from typing import Set, Dict, Tuple, Type
+from treys import Card, Evaluator, Deck
+
+# Copyright (c) 2013 Will Drevo
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
 '''
 Initialization:
@@ -22,10 +42,10 @@ When ended, advance to next round
 
 class Game:                          # Game object
     def __init__(self) -> None:
-        self.deck = full_deck
-        self.community_cards: List[Type[Card]] = []
-        self.players: List[Type[Player]] = []
-        self.actions: List[Type[Action]] = []            # History of actions throughout the game
+        self.deck = Deck()
+        self.community_cards: list[Type[Card]] = []
+        self.players: list[Type[Player]] = []
+        self.actions: list[Type[Action]] = []            # History of actions throughout the game
         self.call_amount: int = -1        # Minimum amount to call
         self.game_pot = 0
         self.cur_player = 0
@@ -33,13 +53,14 @@ class Game:                          # Game object
         self.fold_count = 0
         self.round = 0
         
-    def deal():                      # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
+    def deal():       # Cards from deck are assigned, 2 to each player and the 5 community cards are dealt (face down)
         pass
     
     def get_pot():
         pass
     
     def evaluate_hands(self, hands):
+        pass
         _community_cards = []
         for card in self.community_cards:
             _community_cards.append(TreyCard.new(str(card)))
@@ -164,33 +185,24 @@ class Player:
         self.wallet = init_cash
         self.stake: bool = None
         self.hand: Tuple[Type[Card]] = ()
+
+    def __repr__(self) -> str:
+        return "Player: ID = " + self.id
     
 class Action:
     def __init__(self) -> None:
         pass
         
-class Card:
-    def __init__(self, val: int, suit: str) -> None:
-        self.val = val  # 1 char symbols are unchanged, 10 is T
-        self.suit = suit.lower() # Character representing the suit
-        self.public: bool = False
-
-    def __repr__(self) -> str:
-        string = str(self.val) + self.suit
-
-        if len(string) < 3:      # Ensures the output is always 3 characters long
-            return "0" + string
-        return string
-        
 
 if __name__ == "__main__":
-    full_deck = List[Type[Card]]
-    players = List[Type[Player]]
+    full_deck: list[Type[Card]] = []
+
+    players: list[Type[Player]] = []
     
     num_of_players = 4
     
-    for i in range(len(num_of_players)):
-        players.append(Player(id))
+    for i in range(num_of_players):
+        players.append(Player(i, 0))
     
     
     
