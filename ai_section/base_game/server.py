@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
-import new
+import ai_section.base_game.main as main
 import json
 
 hostName = "localhost"
@@ -36,10 +36,11 @@ class ArmServer(BaseHTTPRequestHandler):
                 game.process_turn(post_data["action"], post_data["player"], post_data["amount"])
             case "setPlayer":
                 game.set_player(post_data["player_count"])
+        
 
 if __name__ == "__main__":
     # Initialize your Game instance
-    my_game = new.Game()
+    my_game = main.Game()
     
     # Create the server and pass the Game instance
     webServer = ArmHTTPServer((hostName, serverPort), ArmServer, my_game)
