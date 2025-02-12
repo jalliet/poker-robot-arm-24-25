@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
-import ai_section.base_game.main as main
+import main as main
 import json
 
 hostName = "localhost"
@@ -33,9 +33,14 @@ class ArmServer(BaseHTTPRequestHandler):
         
         match post_data["type"]:
             case "action":
-                game.process_turn(post_data["action"], post_data["player"], post_data["amount"])
-            case "setPlayer":
+                game.process_turn(post_data["action"], int(post_data["player"]), int(post_data["amount"]))
+            case "setPlayers":
                 game.set_player(post_data["player_count"])
+            case "showdown":
+                game.evaluate_hands(post_data["community"], post_data["hands"])
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
         
 
 if __name__ == "__main__":

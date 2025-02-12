@@ -1,6 +1,2 @@
 setPlayers,3,null,null
-action,0,raise,20
-action,1,raise,30
-action,2,call,30
-action,0,check,null
-action,1,check,null
+showdown,null,null,null

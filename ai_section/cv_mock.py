@@ -14,6 +14,8 @@ for line in lines:
             requests.post(SERVER, json={"type":"setPlayers", "player_count":player})
         case "action":
             requests.post(SERVER, json={"type":"action", "action":action, "player":player, "amount":amount})
+        case "showdown":
+            requests.post(SERVER, json={"type":"showdown", "community":["2h","4h","9d","Kh","2c"], "hands":[["Qh", "7h"], ["Kd", "2s"]]})
             
     sleep(1)
         

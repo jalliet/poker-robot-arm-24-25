@@ -57,25 +57,33 @@ class Game:                          # Game object
     def get_pot(self):
         pass
     
-    def evaluate_hands(self):        
+    def evaluate_hands(self, community, hands): 
+        print(community)
+        print(hands)
+        evaluator = Evaluator()  # Create an instance of Evaluator
         hand_scores = {}
-        for player in self.players:
-            hand = player.hand
-            hand_scores[hand] = Evaluator.evaluate(self.community_cards, hand)
+
+        # Convert JSON string arrays to Treys integer-based card representations
+        community_cards = [Card.new(card) for card in community]
+
+        for hand in hands:
+            hole_cards = [Card.new(card) for card in hand]  # Convert hand strings to integers
+            hand_rank = evaluator.evaluate(community_cards, hole_cards)  # Evaluate hand
+            hand_scores[tuple(hand)] = hand_rank  # Store result using the original hand as a tuple
+
+        print(hand_scores)
+        return hand_scores
             
     
     def end_round(self):
         self.round += 1
         if self.round == 1:
-            self.community_cards.append(self.deck.draw(3))
             # send flop to kinematics
             pass
         elif self.round == 2:
-            self.community_cards.append(self.deck.draw(1))
             # send turn to kinematics
             pass
         elif self.round == 3:
-            self.community_cards.append(self.deck.draw(1))
             # send river to kinematics
             pass
         elif self.round == 4:
@@ -104,7 +112,7 @@ class Game:                          # Game object
         
     
     def set_player(self, num):      # Input number of players from cv team (including player id)
-        for id in range(num):
+        for id in range(int(num)):
             self.add_player(id)
     
     def add_player(self, id):
@@ -185,7 +193,7 @@ class Player:
         self.hand: list[Type[Card]] = []
 
     def __repr__(self) -> str:
-        return "Player: ID = " + self.id
+        return "Player: ID = " + str(self.id)
     
 class Action:
     def __init__(self) -> None:
