@@ -155,33 +155,6 @@ class Game:                          # Game object
     def fold(self, player, showCards=False):        # Fold, remove players (may add an option to show cards)
         self.players.remove(player)
         
-    def startGame (self):
-        #setup to start the game
-        
-        #shuffle cards
-        #start the ante (if desired)
-        pass
-    
-    def shuffle_cards(self):
-        #shuffles the card deck
-        pass
-
-    def draw_card(self, card=None):
-        #draws card from the deck
-        #if card provided, will draw that card from the deck
-        pass
-    
-    def nextPlayer(self, player):
-        #switches the current player to the next in queue
-        pass
-    
-    def getCurrentPlayer(self):
-        #returns the current player
-        pass
-    
-    def recievePlayerAction(self):
-        #takes action of curentPlayer
-        pass
         
 
 
