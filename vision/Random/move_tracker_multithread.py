@@ -10,8 +10,9 @@ from inference.core.interfaces.stream.sinks import render_boxes
 from inference.core.interfaces.camera.entities import VideoFrame
 import torch
 from ultralytics import YOLO
+import os
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE = "vision/config.json"
 
 # Load player areas from config
 def load_config():
@@ -33,12 +34,14 @@ chip_queue = queue.Queue()
 
 # Camera setup
 camera_1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Bird's eye view
-camera_2 = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Close-up for chip counting
+camera_2 = cv2.VideoCapture(1, cv2.CAP_DSHOW)  # Close-up for chip counting
 
 # Ensure cameras opened successfully
 if not camera_1.isOpened() or not camera_2.isOpened():
     print("Error: Could not open cameras.")
     exit()
+    
+chip_capture_requested = threading.Event()
 
 # ==============================
 #  HAND DETECTION THREAD (YOLOv8)
@@ -132,41 +135,95 @@ def detect_folds():
                 if len(set(clustering.labels_)) > 0:
                     new_folds.add(player)
 
+            # Display edges detection
+            #cv2.imshow(f"Edges Detection - {player}", edges)
+
         # Send update **only if** fold status changed
         if new_folds != last_folds:
             fold_queue.put(new_folds)
             last_folds = new_folds.copy()
 
+        cv2.waitKey(1)  # Add a small delay to allow window updates
 
 # ==============================
 #  CHIP COUNTING THREAD
 # ==============================
 def count_chips():
     last_chip_count = None
+    
+    # Hardcoded values for different chip colors
+    chip_values = {
+        'red': 5,
+        'blue': 10,
+        'black': 25,
+        'white': 1
+    }
 
+    # Class-to-color mapping
+    class_to_color = {
+        2: 'red',
+        3: 'white',
+        1: 'blue',
+        0: 'black'
+    }
+    
+    # Load the YOLO model
+    model_path = "vision/chips_train/train/weights/best.pt"
+    if not os.path.exists(model_path):
+        print(f"Error: Model weights not found at {model_path}")
+        return
+    model = YOLO(model_path) 
+    
     while True:
         ret, frame = camera_2.read()
         if not ret:
             print("Chip Counting: Camera feed error")
             break
 
-        x, y, w, h = POT_AREA
-        pot_region = frame[y:y+h, x:x+w]
-        
-        # Simulated chip counting (Replace with real model inference)
-        chip_count = np.random.randint(0, 100)  # Simulated chip count
-        
-        # Send update **only if** chip count changes
-        if chip_count != last_chip_count:
-            chip_queue.put(chip_count)
-            last_chip_count = chip_count
+        cv2.imshow("Camera 2 Feed", frame)
+        cv2.waitKey(1)
 
+        if chip_capture_requested.is_set():
+            print("Key 'c' pressed. Capturing photo and counting chips...")
+            x, y, w, h = POT_AREA
+            pot_region = frame[y:y+h, x:x+w]
+
+            results = model(pot_region, show=False)
+
+            total_value = 0
+            for result in results:
+                for box in result.boxes:
+                    chip_class = int(box.cls.item())
+                    chip_color = class_to_color.get(chip_class, None)
+                    if chip_color and chip_color in chip_values:
+                        total_value += chip_values[chip_color]
+
+            print(f"Total value of the pot: ${total_value}")
+
+            annotated_frame = results[0].plot()
+            cv2.imshow("YOLO Detection", annotated_frame)
+            cv2.waitKey(1)
+
+            # Send chip count to main thread
+            chip_queue.put(total_value)
+
+            # Reset the event after processing
+            chip_capture_requested.clear()
 
 # ==============================
 #  MAIN THREAD - PROCESS DATA
 # ==============================
 def main_loop():
     while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key in (ord('c'), ord('C')):
+            print("Chip count request sent...")
+            chip_capture_requested.set()
+        elif key in (ord('q'), ord('Q')):
+            print("Exiting main loop...")
+            break
+
+        # Initialize variables before the try-except blocks
         hands = None
         folds = None
         chip_count = None
@@ -200,13 +257,16 @@ def main_loop():
         if chip_count is not None:
             print(f"[CHIP COUNT] New pot value: {chip_count}")
 
+        # Display a blank window to ensure cv2.waitKey is called
+        cv2.imshow("Main Loop", np.zeros((100, 100, 3), dtype=np.uint8))
+        cv2.waitKey(1)
 
 # ==============================
 #  START THREADS
 # ==============================
 hand_thread = threading.Thread(target=detect_hands, daemon=True)
 fold_thread = threading.Thread(target=detect_folds, daemon=True)
-chip_thread = threading.Thread(target=count_chips, daemon=True)
+chip_thread = threading.Thread(target=count_chips, daemon=True)  
 
 hand_thread.start()
 fold_thread.start()

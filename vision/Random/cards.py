@@ -3,7 +3,7 @@ import torch
 from ultralytics import YOLO  # YOLOv8
 
 # Load the YOLO model
-model = YOLO("train/train/weights/best.pt") 
+model = YOLO("vision/train/train/weights/best.pt") 
 
 # Start webcam capture
 cap = cv2.VideoCapture(1) 

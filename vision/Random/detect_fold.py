@@ -3,7 +3,7 @@ import numpy as np
 import json
 from sklearn.cluster import DBSCAN
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE = "vision/config.json"
 
 # Load player areas from config
 def load_config():
@@ -15,7 +15,7 @@ regions = load_config()
 PLAYER_AREAS = {name: regions[name] for name in regions if "player" in name}
 
 # Initialize webcam
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
@@ -82,6 +82,10 @@ def detect_cards_in_area(frame, player_area, eps=50, min_samples=1, debug=False)
 
     return False, len(centers)  # No fold detected and number of centers
 
+# Dictionary to keep track of consecutive frames with detected cards for each player
+consecutive_fold_counts = {player_name: 0 for player_name in PLAYER_AREAS.keys()}
+FOLD_THRESHOLD = 30
+
 print("Press 'q' to quit.")
 while True:
     ret, frame = cap.read()
@@ -92,16 +96,24 @@ while True:
     for player_name, player_area in PLAYER_AREAS.items():
         folded, num_centers = detect_cards_in_area(frame, player_area, debug=True)
         
+        if folded:
+            consecutive_fold_counts[player_name] += 1
+        else:
+            consecutive_fold_counts[player_name] = 0
+        
+        # Consider the player folded if the condition is met for 10 frames in a row
+        is_folded = consecutive_fold_counts[player_name] >= FOLD_THRESHOLD
+        
         # Draw the bounding box and display the number of detected contours
         x, y, w, h = player_area
-        color = (0, 0, 255) if folded else (0, 255, 0)
+        color = (0, 0, 255) if is_folded else (0, 255, 0)
         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv2.putText(frame, f"{player_name}: {num_centers} centers", (x, y - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         
         # Print if the player has folded (cards detected)
-        if folded:
-            print(f"{player_name} has folded (cards detected in area).")
+        if is_folded:
+            print(f"{player_name} has folded (cards detected in area for {FOLD_THRESHOLD} frames).")
 
     # Show the frame with bounding boxes
     cv2.imshow("Player Fold Detection", frame)
