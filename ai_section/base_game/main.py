@@ -52,6 +52,7 @@ class Game:                          # Game object
         self.progress_count = 0
         self.fold_count = 0
         self.round = 0
+        self.folded_num = 0
         
     
     def get_pot(self):
@@ -94,7 +95,7 @@ class Game:                          # Game object
         
     
     def check_end_of_round(self):
-        if self.progress_count == len(self.players) - 1:
+        if self.progress_count == len(self.players) - 1 - self.folded_num:
             self.end_round()
         
     def process_turn(self, action: str, player, n=0):
@@ -109,6 +110,8 @@ class Game:                          # Game object
             case "raise":
                 self.raiseBet(player, n)
                 self.progress_count = 0
+            case "fold":
+                self.folded_num += 1
                 
         self.check_end_of_round()
         
