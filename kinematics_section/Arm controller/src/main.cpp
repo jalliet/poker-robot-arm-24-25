@@ -13,20 +13,25 @@ float status_period = 1;
   Commands
 */
 
+
+
 void enable_suction() {
-  
+  digitalWrite(VALVE_MOTOR_PIN, 1);
+  digitalWrite(PUMP_MOTOR_PIN, 1);
 }
 
 void disable_suction() {
-
+  digitalWrite(VALVE_MOTOR_PIN, 0);
+  digitalWrite(PUMP_MOTOR_PIN, 0);
 }
 
 void report_status() {
-  //Serial.println("my_status " + );
+  Serial.println("my_status ");
 }
 
 void set_pin(int pin, bool value) {
-
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, value ? 1:0);
 }
 
 void set_angles(
@@ -116,14 +121,14 @@ void setup() {
   pinMode(VALVE_MOTOR_PIN, OUTPUT);
   pinMode(PUMP_MOTOR_PIN, OUTPUT);
 
-  pinMode(0, OUTPUT);
+  pinMode(PIN_A9, OUTPUT);
 }
 
 void loop() {
-  digitalWrite(0, 1);
+  digitalWrite(PIN_A9, 1);
 
   delay(500);
-  digitalWrite(0, 0);
+  digitalWrite(PIN_A9, 0);
 
   delay(500);
   
