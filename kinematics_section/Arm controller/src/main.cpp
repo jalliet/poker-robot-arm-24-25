@@ -1,12 +1,18 @@
 #include <Arduino.h>
+#include <Servo.h>
 
 constexpr int MOTOR0_PIN = 0,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
 constexpr int VALVE_MOTOR_PIN = 0, PUMP_MOTOR_PIN = 0;
+
+constexpr int PWM_FREQ = 50;
 
 float current_angle0, current_angle1, current_angle2, current_angle3, current_speed;
 
 bool reporting_status_periodically = false;
 float status_period = 1;
+
+
+Servo servo0, servo1, servo2, servo3;
 
 
 /*
@@ -34,10 +40,23 @@ void set_pin(int pin, bool value) {
   digitalWrite(pin, value ? 1:0);
 }
 
+
+
 void set_angles(
   float angle0, float angle1, float angle2, float angle3,
   float speed0, float speed1, float speed2, float speed3) {
 
+  if (angle0 < 0 || angle0 > 180) return;
+  servo0.write(int(angle0));
+
+  if (angle1 < 0 || angle1 > 180) return;
+  servo1.write(int(angle1));
+
+  if (angle2 < 0 || angle2 > 180) return;
+  servo2.write(int(angle2));
+
+  if (angle3 < 0 || angle3 > 180) return;
+  servo3.write(int(angle3));
 }
 
 /*
@@ -113,15 +132,15 @@ void setup() {
     // wait for Arduino Serial Monitor to be ready
   }
 
-  pinMode(MOTOR0_PIN, OUTPUT);
-  pinMode(MOTOR1_PIN, OUTPUT);
-  pinMode(MOTOR2_PIN, OUTPUT);
-  pinMode(MOTOR3_PIN, OUTPUT);
-
   pinMode(VALVE_MOTOR_PIN, OUTPUT);
   pinMode(PUMP_MOTOR_PIN, OUTPUT);
 
   pinMode(PIN_A9, OUTPUT);
+
+  servo0.attach(MOTOR0_PIN, 1000, 2000);
+  servo1.attach(MOTOR1_PIN, 1000, 2000);
+  servo2.attach(MOTOR2_PIN, 1000, 2000);
+  servo3.attach(MOTOR3_PIN, 1000, 2000);
 }
 
 void loop() {
