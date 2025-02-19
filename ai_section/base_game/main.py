@@ -67,8 +67,8 @@ class Game:                          # Game object
         community_cards = [Card.new(card) for card in community]
 
         for hand in hands:
-            hole_cards = [Card.new(card) for card in hand]  # Convert hand strings to integers
-            hand_rank = evaluator.evaluate(community_cards, hole_cards)  # Evaluate hand
+            hand_cards = [Card.new(card) for card in hand]  # Convert hand strings to integers
+            hand_rank = evaluator.evaluate(community_cards, hand_cards)  # Evaluate hand
             hand_scores[tuple(hand)] = hand_rank  # Store result using the original hand as a tuple
 
         print(hand_scores)
@@ -76,6 +76,7 @@ class Game:                          # Game object
             
     
     def end_round(self):
+        print("END ROUND!!!!!!!!!! WAHOO")
         self.round += 1
         if self.round == 1:
             # send flop to kinematics
@@ -97,7 +98,7 @@ class Game:                          # Game object
             self.end_round()
         
     def process_turn(self, action: str, player, n=0):
-        print(self.players)
+        
         player = self.players[int(player)]
         
         match action: 
@@ -108,7 +109,8 @@ class Game:                          # Game object
             case "raise":
                 self.raiseBet(player, n)
                 self.progress_count = 0
-
+                
+        self.check_end_of_round()
         
     
     def set_player(self, num):      # Input number of players from cv team (including player id)
@@ -162,7 +164,7 @@ class Player:
     def __init__(self, id, init_cash=100) -> None: # Added ID for players
         self.id = id
         self.wallet = init_cash
-        self.stake: bool = None
+        self.stake: int = 0
         self.hand: list[Type[Card]] = []
 
     def __repr__(self) -> str:

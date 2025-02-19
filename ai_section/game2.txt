@@ -1,7 +1,9 @@
-setPlayers,3,null,null
+setPlayers,2,null,null
 action,0,raise,20
 action,1,raise,30
-action,2,call,30
-action,0,check,null
-action,1,check,null
+action,0,call,30
+action,0,raise,60
+action,1,raise,80
+action,0,raise,100
+action,1,call,100
 showdown,null,null,null

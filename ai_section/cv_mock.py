@@ -3,7 +3,7 @@ import requests
 # Change server to ip of poker ai server
 SERVER = "http://localhost:666/"
 
-with open("./ai_section/game.txt") as file:
+with open("./ai_section/game2.txt") as file:
     lines = [line.rstrip() for line in file]
 
 for line in lines:
