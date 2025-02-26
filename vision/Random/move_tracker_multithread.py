@@ -11,6 +11,10 @@ from inference.core.interfaces.camera.entities import VideoFrame
 import torch
 from ultralytics import YOLO
 import os
+from dotenv import load_dotenv
+
+# Load the environment variables
+load_dotenv()
 
 CONFIG_FILE = "vision/config.json"
 
@@ -19,7 +23,6 @@ def load_config():
     """Loads saved player, pot, and community card locations."""
     with open(CONFIG_FILE, "r") as f:
         return json.load(f)
-
 regions = load_config()
 
 PLAYER_AREAS = {name: regions[name] for name in regions if "player" in name}
@@ -96,7 +99,7 @@ def detect_hands():
         model_id="hand_detect-xhlhk/2",
         video_reference=0,
         on_prediction=combined_sink,
-        api_key="cNMxZM6Ckyg2LD0DiV5n"
+        api_key=os.getenv("API_REFERENCE_KEY")
     )
     pipeline.start()
     pipeline.join()

@@ -2,9 +2,15 @@ import tkinter as tk
 from tkinter import scrolledtext
 import requests
 import json
+import os
+from dotenv import load_dotenv
+
+# Load the environment variables
+load_dotenv()
+
 
 # API URL
-BASE_URL = "http://localhost:5000"
+BASE_URL = os.getenv("AI_SERVER_URL")
 
 def test_endpoint(endpoint, method="GET", data=None):
     try:

@@ -7,6 +7,10 @@ import threading
 import numpy as np
 from sklearn.cluster import DBSCAN
 from ultralytics import YOLO
+from dotenv import load_dotenv
+
+# Load the environment variables
+load_dotenv()
 
 # =============================================================================
 # Global Queues and Stop Event
@@ -261,7 +265,7 @@ def hand_tracking_thread():
         model_id="hand_detect-xhlhk/2",  # yolov8x model with input size 1280
         video_reference=custom_source,   # pass our custom video source
         on_prediction=combined_sink,
-        api_key="cNMxZM6Ckyg2LD0DiV5n",
+        api_key=os.getenv("INFERENCE_API_KEY"),
     )
 
     pipeline.start()
