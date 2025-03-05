@@ -1,8 +1,25 @@
 from inference import InferencePipeline
 from inference.core.interfaces.stream.sinks import render_boxes
 from inference.core.interfaces.camera.entities import VideoFrame
+from dotenv import load_dotenv
+import os
 
 def hand_tracking_thread(event_queue, stop_event):
+
+    # Load environment variables
+    load_dotenv()
+    
+    # Get API key from environment variable
+    api_key = os.getenv("INFERENCE_API_KEY")
+    
+    if not api_key:
+        event_queue.put({
+            "source": "hand_tracking",
+            "event": "error",
+            "message": "INFERENCE_API_KEY environment variable not set"
+        })
+        return
+    
     def my_custom_sink(predictions: dict, video_frame: VideoFrame):
         for p in predictions.get('predictions', []):
             event_queue.put({
