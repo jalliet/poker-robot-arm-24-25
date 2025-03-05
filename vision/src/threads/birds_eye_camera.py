@@ -1,13 +1,9 @@
 import cv2
 import pyvirtualcam
-from ..utils.shared_state import shared_frame, birds_eye_lock, event_queue, stop_event
+import threading
+import queue
 
-def birds_eye_camera_thread():
-    """
-    Opens the physical camera (index 0) and, for each frame:
-      - Converts the frame from BGR to RGB and sends it to a virtual webcam (via pyvirtualcam)
-      - Updates a shared frame (protected by a lock) for fold detection.
-    """
+def birds_eye_camera_thread(shared_frame, birds_eye_lock, event_queue, stop_event):
     physical_cam_index = 0
     cap = cv2.VideoCapture(physical_cam_index)
     if not cap.isOpened():
@@ -21,6 +17,8 @@ def birds_eye_camera_thread():
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or 640
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 480
     fps = cap.get(cv2.CAP_PROP_FPS) or 20
+
+    print(f"Camera properties - Width: {width}, Height: {height}, FPS: {fps}")
 
     try:
         with pyvirtualcam.Camera(width=width, height=height, fps=fps) as virtual_cam:

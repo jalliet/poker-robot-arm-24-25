@@ -5,7 +5,6 @@ from .shared_state import (
     stop_event,
     chip_detection_event
 )
-from .config import load_config
 
 __all__ = [
     'shared_frame',

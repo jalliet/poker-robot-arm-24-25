@@ -1,13 +1,11 @@
 import os
 import cv2
+import json
 from ultralytics import YOLO
-from ..utils.shared_state import event_queue, stop_event, chip_detection_event
+import threading
+import queue
 
-def chip_detection_thread():
-    """
-    Opens the chip camera (assumed here at index 1) only when triggered.
-    Captures one frame, runs YOLO chip detection, and displays the result.
-    """
+def chip_detection_thread(event_queue, stop_event, chip_detection_event):
     model_path = "vision/chips_train/train/weights/best.pt"
     if not os.path.exists(model_path):
         event_queue.put({
@@ -18,11 +16,16 @@ def chip_detection_thread():
         return
 
     model = YOLO(model_path)
-    chip_values = {'red': 5, 'blue': 10, 'black': 25, 'white': 1}
+    
+    with open("vision/config.json", "r") as f:
+        config = json.load(f)
+    
+    chip_values = config["chip_values"] 
+
     class_to_color = {2: 'red', 3: 'white', 1: 'blue', 0: 'black'}
 
     while not stop_event.is_set():
-        if not chip_detection_event.wait(timeout=0.1):
+        if not chip_detection_event.wait(0.1):
             continue
 
         cap = cv2.VideoCapture(1)
