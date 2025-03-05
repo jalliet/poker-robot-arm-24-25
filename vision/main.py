@@ -2,6 +2,11 @@ import threading
 import time
 import queue
 import cv2
+import json
+from dotenv import load_dotenv
+
+# Load the environment variables
+load_dotenv()
 
 shared_frame = {"birds_eye": None}
 birds_eye_lock = threading.Lock()

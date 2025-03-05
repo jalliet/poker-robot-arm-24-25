@@ -2,9 +2,16 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import new
 import json
+import os
+from dotenv import load_dotenv
 
-hostName = "localhost"
-serverPort = 666
+# Load the environment variables
+load_dotenv()
+
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
+temp_url = AI_SERVER_URL[AI_SERVER_URL.index('://')+3:]
+hostName = temp_url[:temp_url.index(':')]
+serverPort = int(temp_url[temp_url.index(':')+1:])
 
 class ArmServer(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
@@ -36,7 +43,7 @@ class ArmServer(BaseHTTPRequestHandler):
         
 if __name__ == "__main__":
     webServer = HTTPServer((hostName, serverPort), ArmServer)
-    print("Server started http://%s:%s$ "% (hostName, serverPort))
+    print("Server started %s "% AI_SERVER_URL)
 
     try: 
         webServer.serve_forever()
