@@ -36,7 +36,7 @@ def main():
     hand_thread = threading.Thread(target=hand_tracking_thread, args=(event_queue, stop_event), name="HandTracking", daemon=True)
     threads.append(hand_thread)
 
-    aggregator_thread = threading.Thread(target=event_aggregator_thread, args=(event_queue, stop_event), name="Aggregator", daemon=True)
+    aggregator_thread = threading.Thread(target=event_aggregator_thread, args=(event_queue, stop_event, chip_detection_event), name="Aggregator", daemon=True)
     threads.append(aggregator_thread)
 
     key_thread = threading.Thread(target=key_listener_thread, args=(stop_event, chip_detection_event), name="KeyListener", daemon=True)

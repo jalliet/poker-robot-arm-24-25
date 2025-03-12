@@ -162,3 +162,15 @@ cython_debug/
 #.idea/
 
 .env
+
+# Large training data files
+train.zip
+chips_train.zip
+train/
+chips_train/
+sample_images/
+vision/train/
+vision/train.zip
+vision/chips_train.zip
+vision/chips_train/
+vision/sample_images/

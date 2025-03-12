@@ -87,6 +87,13 @@ def fold_detection_thread(shared_frame, birds_eye_lock, event_queue, stop_event)
             label = f"{player_name}: {'Folded' if is_folded else 'Active'}"
             if is_folded:
                 folded_players.append(player_name)
+                # Send fold event to the event queue
+                event_queue.put({
+                    "source": "fold_detection",
+                    "event": "fold",
+                    "player_name": player_name,
+                    "timestamp": time.time()
+                })
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
