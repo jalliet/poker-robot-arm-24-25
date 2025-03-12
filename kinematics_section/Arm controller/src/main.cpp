@@ -1,18 +1,18 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-constexpr int MOTOR0_PIN = 0,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
+constexpr int MOTOR0_PIN = A9,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
 constexpr int VALVE_MOTOR_PIN = 0, PUMP_MOTOR_PIN = 0;
 
 constexpr int PWM_FREQ = 50;
 
-float current_angle0, current_angle1, current_angle2, current_angle3, current_speed;
+float current_angle0, current_angle1, current_angle2, current_angle3, current_angle4, current_speed;
 
 bool reporting_status_periodically = false;
 float status_period = 1;
 
 
-Servo servo0, servo1, servo2, servo3;
+Servo servo0, servo1, servo2, servo3, servo4;
 
 
 /*
@@ -43,8 +43,8 @@ void set_pin(int pin, bool value) {
 
 
 void set_angles(
-  float angle0, float angle1, float angle2, float angle3,
-  float speed0, float speed1, float speed2, float speed3) {
+  float angle0, float angle1, float angle2, float angle3, float angle4,
+  float speed0, float speed1, float speed2, float speed3, float speed4) {
 
   if (angle0 < 0 || angle0 > 180) return;
   servo0.write(int(angle0));
@@ -57,6 +57,11 @@ void set_angles(
 
   if (angle3 < 0 || angle3 > 180) return;
   servo3.write(int(angle3));
+
+  if (angle4 < 0 || angle4 > 180) return;
+  servo4.write(int(angle4));
+
+  Serial.print("success\n");
 }
 
 /*
@@ -64,6 +69,7 @@ void set_angles(
 */
 
 void received_message(const String* messages, int length) {
+  printf("%d;\n", length);
   if (length == 1) {
     if (messages[0] == "suck") {
       enable_suction();
@@ -76,18 +82,18 @@ void received_message(const String* messages, int length) {
     }
   }
 
-  if (length == 2 && messages[0] == "set_pin") {
+  else if (length == 2 && messages[0] == "set_pin") {
     bool value = messages[1] == '1';
     int pin = messages[0].toInt();
 
   }
 
-  if (length == 2 && messages[0] == "req_periodic_status") {
+  else if (length == 2 && messages[0] == "req_periodic_status") {
     float period = messages[1].toFloat();
     if (period == 0) {}
   }
 
-  if (length == 9 && messages[0] == "set_angles") {
+  else if (length == 9 && messages[0] == "set_angles") {
     set_angles(
       messages[1].toFloat(), 
       messages[2].toFloat(), 
@@ -98,6 +104,9 @@ void received_message(const String* messages, int length) {
       messages[7].toFloat(), 
       messages[8].toFloat());
   }
+  else {
+    Serial.print("Invalid command\n");
+  }
 
 }
 
@@ -106,6 +115,8 @@ void received_message(const String* messages, int length) {
 */
 
 void parse_line(const String& line) {
+  
+
   constexpr int MAX_MESSAGES = 32;
   String messages[MAX_MESSAGES];
   int message_count = 0;
@@ -141,9 +152,34 @@ void setup() {
   servo1.attach(MOTOR1_PIN, 1000, 2000);
   servo2.attach(MOTOR2_PIN, 1000, 2000);
   servo3.attach(MOTOR3_PIN, 1000, 2000);
+  Serial.setTimeout(0);
+  
+}
+
+void processIncomingByte(char c) {
+  static char buffer[512];
+  static int size = 0;
+  buffer[size] = c;
+  size++;
+  if (size == 511) {
+    size = 0;
+    Serial.print("buffer overun");
+  }
+
+  if ( c == ';') {
+    buffer[size] = '/0';
+    String str {buffer};
+    parse_line(str);
+    size = 0;
+  }
 }
 
 void loop() {
+  
+  
+  while (Serial.available () > 0)
+    processIncomingByte (Serial.read ());
+
   /*
   digitalWrite(PIN_A9, 1);
 
