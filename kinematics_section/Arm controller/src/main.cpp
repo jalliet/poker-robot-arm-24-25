@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-constexpr int MOTOR0_PIN = 0,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
+constexpr int MOTOR0_PIN = A9,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
 constexpr int VALVE_MOTOR_PIN = 0, PUMP_MOTOR_PIN = 0;
 
 constexpr int PWM_FREQ = 50;
@@ -57,6 +57,8 @@ void set_angles(
 
   if (angle3 < 0 || angle3 > 180) return;
   servo3.write(int(angle3));
+
+  Serial.print("success\n");
 }
 
 /*
@@ -64,6 +66,7 @@ void set_angles(
 */
 
 void received_message(const String* messages, int length) {
+  printf("%d;\n", length);
   if (length == 1) {
     if (messages[0] == "suck") {
       enable_suction();
@@ -76,18 +79,18 @@ void received_message(const String* messages, int length) {
     }
   }
 
-  if (length == 2 && messages[0] == "set_pin") {
+  else if (length == 2 && messages[0] == "set_pin") {
     bool value = messages[1] == '1';
     int pin = messages[0].toInt();
 
   }
 
-  if (length == 2 && messages[0] == "req_periodic_status") {
+  else if (length == 2 && messages[0] == "req_periodic_status") {
     float period = messages[1].toFloat();
     if (period == 0) {}
   }
 
-  if (length == 9 && messages[0] == "set_angles") {
+  else if (length == 9 && messages[0] == "set_angles") {
     set_angles(
       messages[1].toFloat(), 
       messages[2].toFloat(), 
@@ -98,6 +101,9 @@ void received_message(const String* messages, int length) {
       messages[7].toFloat(), 
       messages[8].toFloat());
   }
+  else {
+    Serial.print("Invalid command\n");
+  }
 
 }
 
@@ -106,6 +112,8 @@ void received_message(const String* messages, int length) {
 */
 
 void parse_line(const String& line) {
+  
+
   constexpr int MAX_MESSAGES = 32;
   String messages[MAX_MESSAGES];
   int message_count = 0;
@@ -141,17 +149,32 @@ void setup() {
   servo1.attach(MOTOR1_PIN, 1000, 2000);
   servo2.attach(MOTOR2_PIN, 1000, 2000);
   servo3.attach(MOTOR3_PIN, 1000, 2000);
+  Serial.setTimeout(0);
+  
+}
+
+void processIncomingByte(char c) {
+  static char buffer[512];
+  static int size = 0;
+  buffer[size] = c;
+  size++;
+  if (size == 511) {
+    size = 0;
+    Serial.print("buffer overun");
+  }
+
+  if ( c == ';') {
+    buffer[size] = '/0';
+    String str {buffer};
+    parse_line(str);
+    size = 0;
+  }
 }
 
 void loop() {
-  digitalWrite(PIN_A9, 1);
-
-  delay(500);
-  digitalWrite(PIN_A9, 0);
-
-  delay(500);
   
+  
+  while (Serial.available () > 0)
+    processIncomingByte (Serial.read ());
 
-  //String str = Serial.readStringUntil('\n', 500);
-  //parse_line(str);
 }
