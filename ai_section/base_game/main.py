@@ -1,5 +1,8 @@
 from typing import Set, Dict, Tuple, Type
 from treys import Card, Evaluator, Deck
+import tkinter as tk
+from tkinter import scrolledtext
+from typing import Type
 
 # Copyright (c) 2013 Will Drevo
 # 
@@ -54,6 +57,21 @@ class Game:                          # Game object
         self.round = 0
         self.folded_num = 0
         
+        # Initialize Tkinter GUI
+        self.root = tk.Tk()
+        self.root.title("Poker Game Moves")
+        self.text_area = scrolledtext.ScrolledText(self.root, width=50, height=20, wrap=tk.WORD)
+        self.text_area.pack(padx=10, pady=10)
+        self.text_area.insert(tk.END, "Game Started!\n")
+        
+    def log_move(self, move: str):
+        """Logs a move in the Tkinter window."""
+        self.text_area.insert(tk.END, move + "\n")
+        self.text_area.yview(tk.END)  # Auto-scroll to the latest move
+        
+    def run_gui(self):
+        """Runs the Tkinter main loop."""
+        self.root.mainloop()
     
     def get_pot(self):
         pass
@@ -99,8 +117,12 @@ class Game:                          # Game object
             self.end_round()
         
     def process_turn(self, action: str, player, n=0):
-        
         player = self.players[int(player)]
+        move_text = f"Player {player.id} {action.upper()}"
+        if action == "raise":
+            move_text += f" by {n} chips"
+        
+        self.log_move(move_text)
         
         match action: 
             case "call":

@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import time
-import main as main
+import threading
 import json
+import main as main
 
 hostName = "localhost"
 serverPort = 666
@@ -38,23 +38,31 @@ class ArmServer(BaseHTTPRequestHandler):
                 game.set_player(post_data["player_count"])
             case "showdown":
                 game.evaluate_hands(post_data["community"], post_data["hands"])
+        
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        
 
 if __name__ == "__main__":
-    # Initialize your Game instance
+    # Initialize the Game instance
     my_game = main.Game()
     
-    # Create the server and pass the Game instance
-    webServer = ArmHTTPServer((hostName, serverPort), ArmServer, my_game)
-    print("Server started http://%s:%s" % (hostName, serverPort))
-
-    try:
-        webServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
-
-    webServer.server_close()
-    print("Server stopped.")
+    # Function to start the server
+    def start_server():
+        webServer = ArmHTTPServer((hostName, serverPort), ArmServer, my_game)
+        print("Server started at http://%s:%s" % (hostName, serverPort))
+        try:
+            webServer.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        webServer.server_close()
+        print("Server stopped.")
+    
+    # Run server in a separate thread
+    server_thread = threading.Thread(target=start_server, daemon=True)
+    server_thread.start()
+    
+    # Keep the main thread running (useful if integrating with UI or other main-loop logic)
+    my_game.run_gui()
+    
+    print("Main thread exiting.")
