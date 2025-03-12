@@ -144,6 +144,7 @@ void setup() {
 }
 
 void loop() {
+  /*
   digitalWrite(PIN_A9, 1);
 
   Serial.println("sekjdhhfgkj");
@@ -151,8 +152,8 @@ void loop() {
   digitalWrite(PIN_A9, 0);
 
   delay(500);
-  
+  */
 
-  //String str = Serial.readStringUntil('\n', 500);
-  //parse_line(str);
+  String str = Serial.readStringUntil('\n', 500);
+  parse_line(str);
 }
