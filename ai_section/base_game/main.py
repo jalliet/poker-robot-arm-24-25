@@ -1,5 +1,7 @@
 from typing import Set, Dict, Tuple, Type
 from treys import Card, Evaluator, Deck
+import asyncio
+from bleak import BleakClient
 
 # Copyright (c) 2013 Will Drevo
 # 
@@ -39,6 +41,22 @@ Check, raise, raise - call, call, skip - end
 
 When ended, advance to next round
 '''
+
+DEVICE_ADDRESS = "FB:CB:4C:CC:99:68"
+CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"
+
+async def send_bluetooth_message(message):
+    async with BleakClient(DEVICE_ADDRESS) as client:
+        if await client.is_connected():
+            print(f"Connected to {DEVICE_ADDRESS}")
+            # Convert message to bytes
+            data = message.encode("utf-8")
+            # Send data over Bluetooth
+            await client.write_gatt_char(CHARACTERISTIC_UUID, data, response=True)
+            print("Message sent successfully!")
+        else:
+            print("Failed to connect.")
+
 
 class Game:                          # Game object
     def __init__(self) -> None:
@@ -81,6 +99,7 @@ class Game:                          # Game object
         self.round += 1
         if self.round == 1:
             # send flop to kinematics
+            asyncio.run(send_bluetooth_message("flop innit"))
             pass
         elif self.round == 2:
             # send turn to kinematics
