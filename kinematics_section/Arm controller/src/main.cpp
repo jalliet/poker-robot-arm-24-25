@@ -6,13 +6,13 @@ constexpr int VALVE_MOTOR_PIN = 0, PUMP_MOTOR_PIN = 0;
 
 constexpr int PWM_FREQ = 50;
 
-float current_angle0, current_angle1, current_angle2, current_angle3, current_speed;
+float current_angle0, current_angle1, current_angle2, current_angle3, current_angle4, current_speed;
 
 bool reporting_status_periodically = false;
 float status_period = 1;
 
 
-Servo servo0, servo1, servo2, servo3;
+Servo servo0, servo1, servo2, servo3, servo4;
 
 
 /*
@@ -43,8 +43,8 @@ void set_pin(int pin, bool value) {
 
 
 void set_angles(
-  float angle0, float angle1, float angle2, float angle3,
-  float speed0, float speed1, float speed2, float speed3) {
+  float angle0, float angle1, float angle2, float angle3, float angle4,
+  float speed0, float speed1, float speed2, float speed3, float speed4) {
 
   if (angle0 < 0 || angle0 > 180) return;
   servo0.write(int(angle0));
@@ -57,6 +57,9 @@ void set_angles(
 
   if (angle3 < 0 || angle3 > 180) return;
   servo3.write(int(angle3));
+
+  if (angle4 < 0 || angle4 > 180) return;
+  servo4.write(int(angle4));
 
   Serial.print("success\n");
 }
