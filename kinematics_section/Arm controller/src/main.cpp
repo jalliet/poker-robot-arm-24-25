@@ -3,8 +3,11 @@
 
 constexpr int MOTOR0_PIN = A9,  MOTOR1_PIN = 1,  MOTOR2_PIN = 2, MOTOR3_PIN = 3;
 constexpr int VALVE_MOTOR_PIN = 0, PUMP_MOTOR_PIN = 0;
+constexpr int Serial8_RX = 34,  Serial8_TX = 35;
 
 constexpr int PWM_FREQ = 50;
+
+
 
 float current_angle0, current_angle1, current_angle2, current_angle3, current_angle4, current_speed;
 
@@ -32,7 +35,7 @@ void disable_suction() {
 }
 
 void report_status() {
-  Serial.println("my_status ");
+  Serial8.println("my_status ");
 }
 
 void set_pin(int pin, bool value) {
@@ -61,7 +64,7 @@ void set_angles(
   if (angle4 < 0 || angle4 > 180) return;
   servo4.write(int(angle4));
 
-  Serial.print("success\n");
+  Serial8.print("success\n");
 }
 
 /*
@@ -102,10 +105,10 @@ void received_message(const String* messages, int length) {
       messages[5].toFloat(),
       messages[6].toFloat(), 
       messages[7].toFloat(), 
-      messages[8].toFloat());
+      messages[8].toFloat(), 0,0);
   }
   else {
-    Serial.print("Invalid command\n");
+    Serial8.print("Invalid command\n");
   }
 
 }
@@ -127,7 +130,7 @@ void parse_line(const String& line) {
       last_space = i;
       message_count++;
       if (message_count >= MAX_MESSAGES) {
-        Serial.println("error The message is too long");
+        Serial8.println("error The message is too long");
         return;
       }
     }
@@ -139,8 +142,8 @@ void parse_line(const String& line) {
 
 void setup() {
   Serial.begin(9600); // USB is always 12 or 480 Mbit/sec
-  while (!Serial) {
-    // wait for Arduino Serial Monitor to be ready
+  while (!Serial8) {
+    // wait for Arduino Serial8 Monitor to be ready
   }
 
   pinMode(VALVE_MOTOR_PIN, OUTPUT);
@@ -152,22 +155,23 @@ void setup() {
   servo1.attach(MOTOR1_PIN, 1000, 2000);
   servo2.attach(MOTOR2_PIN, 1000, 2000);
   servo3.attach(MOTOR3_PIN, 1000, 2000);
-  Serial.setTimeout(0);
+  Serial8.setTimeout(0);
   
 }
 
 void processIncomingByte(char c) {
+  Serial8.printf("Recieved %c\n", c);
   static char buffer[512];
   static int size = 0;
   buffer[size] = c;
   size++;
   if (size == 511) {
     size = 0;
-    Serial.print("buffer overun");
+    Serial8.print("buffer overun");
   }
 
   if ( c == ';') {
-    buffer[size] = '/0';
+    buffer[size] = '\0';
     String str {buffer};
     parse_line(str);
     size = 0;
@@ -175,21 +179,24 @@ void processIncomingByte(char c) {
 }
 
 void loop() {
-  
-  
-  while (Serial.available () > 0)
-    processIncomingByte (Serial.read ());
+    while (Serial8.available () > 0){
+      processIncomingByte (Serial8.read ());
+      Serial.println("reading next byte");
+    }
 
-  /*
-  digitalWrite(PIN_A9, 1);
-
-  Serial.println("sekjdhhfgkj");
-  delay(500);
-  digitalWrite(PIN_A9, 0);
-
-  delay(500);
-  */
-
-  String str = Serial.readStringUntil('\n', 500);
-  parse_line(str);
+    String str = Serial8.readStringUntil('\n');
+    parse_line(str);
+    Serial.println(str);
+    Serial.println("reading...");
 }
+
+
+    /*
+    digitalWrite(PIN_A9, 1);
+
+    Serial8.println("sekjdhhfgkj");
+    delay(500);
+    digitalWrite(PIN_A9, 0);
+
+    delay(500);
+    */
