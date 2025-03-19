@@ -9,9 +9,9 @@ ANGLE_RANGES = {0: (-180, 180), 1: (-90, 90), 2: (-160, 160), 3: (-160, 160)}
 # Ranges are inclusive on the right and exclusive on the left
 
 # positive x is the forward direction of the arm towards the cards
-# postiive y is the to the left when looking towards the cards
+# postive y is the to the left when looking towards the cards
 # positive z is the upwards direction
-# We define to point (0, 0, 0) to be at the height of the arm base, in the centre or the arm's base
+# We define the point (0, 0, 0) to be at the height of the arm base, in the centre or the arm's base
 # Note that this is unreachable in reality
 
 # positive angles are anti-clockwise
