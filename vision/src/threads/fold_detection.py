@@ -43,9 +43,9 @@ def fold_detection_thread(shared_frame, birds_eye_lock, event_queue, stop_event)
         
         hsv = cv2.cvtColor(player_region, cv2.COLOR_BGR2HSV)
         
-        lower_red1 = np.array([0, 70, 70])
-        upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([160, 70, 70])
+        lower_red1 = np.array([0, 120, 70])
+        upper_red1 = np.array([8, 255, 255])
+        lower_red2 = np.array([170, 120, 70])
         upper_red2 = np.array([180, 255, 255])
         
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -58,13 +58,20 @@ def fold_detection_thread(shared_frame, birds_eye_lock, event_queue, stop_event)
             largest_contour = max(contours, key=cv2.contourArea, default=None)
             if largest_contour is not None:
                 area = cv2.contourArea(largest_contour)
+                # Get bounding rectangle to check shape
+                x, y, w, h = cv2.boundingRect(largest_contour)
+                aspect_ratio = float(w) / h
+                
+                # Cards typically have aspect ratio around 0.7 (2.5" x 3.5")
+                is_card_shape = 0.6 <= aspect_ratio <= 0.8
+                
                 SINGLE_CARD_AREA = 800
-                if area > SINGLE_CARD_AREA * 0.5:
+                if area > SINGLE_CARD_AREA * 0.5 and is_card_shape:
                     return True, area
         return False, 0
 
     consecutive_folding_counts = {player: 0 for player in PLAYER_AREAS.keys()}
-    FOLD_THRESHOLD = 50
+    FOLD_THRESHOLD = 25
 
     print("Press 'q' to quit. Players: Place a single red card face down to fold.")
     while not stop_event.is_set():

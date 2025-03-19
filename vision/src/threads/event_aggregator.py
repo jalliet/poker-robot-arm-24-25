@@ -31,6 +31,10 @@ def event_aggregator_thread(event_queue, stop_event, chip_detection_event=None):
     current_pot_amount = 0
     previous_bet = 0
     
+    # Track last UI update time to ensure consistent framerate
+    last_ui_update = time.time()
+    UI_UPDATE_INTERVAL = 0.03  # ~33fps for smoother UI refresh
+    
     # Map event sources to event types
     event_type_mapping = {
         "hand_tracking": "hand_movement",
@@ -67,9 +71,13 @@ def event_aggregator_thread(event_queue, stop_event, chip_detection_event=None):
             print(f"Exception when sending action to AI server: {e}")
     
     while not stop_event.is_set():
+        # Flag to track if we've processed an event this loop
+        event_processed = False
+        
         try:
-            # Non-blocking queue get with timeout
-            event = event_queue.get(block=True, timeout=0.1)
+            # Non-blocking queue get with very short timeout to be more responsive
+            event = event_queue.get(block=True, timeout=0.01)
+            event_processed = True
             
             # Process the event
             print(f"Received event: {event}")
@@ -122,6 +130,16 @@ def event_aggregator_thread(event_queue, stop_event, chip_detection_event=None):
             # Update game state based on processed event
             if processed_event and "type" in processed_event:
                 print(f"Processing event: {processed_event}")
+                
+                # Check for invalid pot value (0) for chip detection events
+                if processed_event.get("type") == "chip_count" and event.get("event") == "pot_increase":
+                    if "pot_value" in event and event.get("pot_value") == 0:
+                        print("Error: Pot value cannot be 0. Please count chips again.")
+                        # Display error message in UI
+                        game_state.display_error("Error: Pot value cannot be 0. Please count chips again.")
+                        event_queue.task_done()
+                        continue
+                
                 result = game_state.process_event(processed_event)
                 
                 if result:
@@ -145,6 +163,11 @@ def event_aggregator_thread(event_queue, stop_event, chip_detection_event=None):
                         send_to_ai_server(player, action, amount, current_pot_amount)
                         
                         print(f"Player {player} performed action: {action.value}, Amount: {amount}, Pot: {current_pot_amount}")
+                        
+                        # Force immediate UI update after an action
+                        game_state.update_ui()
+                        game_state.display_ui()
+                        last_ui_update = time.time()
             
             # Mark task as done
             event_queue.task_done()
@@ -153,11 +176,18 @@ def event_aggregator_thread(event_queue, stop_event, chip_detection_event=None):
             # No event available, just continue
             pass
         
-        # Update and display UI
-        game_state.display_ui()
+        # Update UI at a consistent frame rate for smoother display
+        current_time = time.time()
+        if current_time - last_ui_update >= UI_UPDATE_INTERVAL:
+            game_state.display_ui()
+            last_ui_update = current_time
         
-        # Small sleep to prevent CPU hogging
-        time.sleep(0.01)
+        # Smaller sleep when we processed an event (to quickly process any follow-up events)
+        # Larger sleep when idle to reduce CPU usage
+        if event_processed:
+            time.sleep(0.005)  # 5ms sleep after processing an event
+        else:
+            time.sleep(0.01)   # 10ms sleep when idle
     
     # Clean up
     cv2.destroyWindow("Poker Game State")

@@ -55,15 +55,29 @@ class GameState:
         
         # If player folded, remove them from active players
         if action == PlayerAction.FOLD:
+            # Remember the position in the rotation
+            next_idx = (self.current_player_idx + 1) % len(self.active_players)
+            next_player = self.active_players[next_idx] if next_idx < len(self.active_players) else None
+            
+            # Remove the folded player
             self.active_players.remove(current_player)
+            
             # If only one player remains, the round is over
             if len(self.active_players) == 1:
                 self.round_active = False
                 print(f"Round ended. Player {self.active_players[0]} wins!")
-        
-        # Move to next player
-        if self.round_active and self.active_players:
-            self.current_player_idx = (self.current_player_idx + 1) % len(self.active_players)
+                self.current_player_idx = 0
+            else:
+                # Find the index of the next player in the updated active_players list
+                if next_player in self.active_players:
+                    self.current_player_idx = self.active_players.index(next_player)
+                else:
+                    # If next player isn't found (shouldn't happen), just use index 0
+                    self.current_player_idx = 0
+        else:
+            # For non-fold actions, simply move to next player
+            if self.round_active and self.active_players:
+                self.current_player_idx = (self.current_player_idx + 1) % len(self.active_players)
         
         # Update UI
         self.update_ui()
@@ -192,3 +206,29 @@ class GameState:
             return self.record_action(PlayerAction.FOLD, detected_player)
             
         return None
+    
+    def display_error(self, error_message):
+        """Display an error message in the UI"""
+        with self.ui_lock:
+            if self.ui_image is not None:
+                # Create a copy of the current UI image
+                error_ui = self.ui_image.copy()
+                
+                # Add a red background for the error message
+                cv2.rectangle(error_ui, (50, 250), (750, 300), (0, 0, 200), -1)
+                cv2.rectangle(error_ui, (50, 250), (750, 300), (0, 0, 255), 2)
+                
+                # Add the error message
+                cv2.putText(error_ui, error_message, (70, 280), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                
+                # Display the error
+                cv2.imshow("Poker Game State", error_ui)
+                cv2.waitKey(1)
+                
+                # Keep the error visible for a moment
+                time.sleep(2)
+                
+                # Restore the original UI
+                cv2.imshow("Poker Game State", self.ui_image)
+                cv2.waitKey(1)
