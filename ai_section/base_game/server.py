@@ -2,9 +2,16 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import main as main
 import json
+import os
+from dotenv import load_dotenv
 
-hostName = "localhost"
-serverPort = 666
+# Load the environment variables
+load_dotenv()
+
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
+temp_url = AI_SERVER_URL[AI_SERVER_URL.index('://')+3:]
+hostName = temp_url[:temp_url.index(':')]
+serverPort = int(temp_url[temp_url.index(':')+1:])
 
 # Define a custom HTTPServer to pass attributes
 class ArmHTTPServer(HTTPServer):
@@ -50,6 +57,8 @@ if __name__ == "__main__":
     # Create the server and pass the Game instance
     webServer = ArmHTTPServer((hostName, serverPort), ArmServer, my_game)
     print("Server started http://%s:%s" % (hostName, serverPort))
+    webServer = HTTPServer((hostName, serverPort), ArmServer)
+    print("Server started %s "% AI_SERVER_URL)
 
     try:
         webServer.serve_forever()
