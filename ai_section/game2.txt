@@ -1,0 +1,9 @@
+setPlayers,3,null,null
+action,0,raise,20
+action,1,raise,30
+action,2,call,30
+action,0,call,30
+action,0,raise,80
+action,1,fold,0
+action,2,call,80
+showdown,null,null,null
