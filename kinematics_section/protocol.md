@@ -2,29 +2,29 @@
 
 # PC => MCU
 
-`set_angles <angle0> <angle1> <angle2> <angle3> <rel. speed0> <rel. speed1> <rel. speed2> <rel. speed3>\n`
-Set the angles of the 4 motors in degrees (decimal), in the range -90 to 90.
-Set the relative speed from 0 to 1 (decimal)
+Comamnds are sent in this format:
+```
+var1=2.3;var2=3.0;
+```
+Newlines ('\n' or '\r') are ignored.
 
-`suck\n`
-Tells MCU to set the suck pin to 1
+| Variable | Description |
+| -------- | ------- |
+| angleN   | Set the angle of the Nth servo e.g (angle0=90.0)  |
+| suck     | Set to 0 to stop sucking the card, set to 1 to suck     |
+| | |
+| req_status | Set to 1 to report the status, automatically set to 0 after |
+| delay_ms| Add delay to the control loop |
+| status_period | The status will be reported every `status_period` loop iterations. A value below 1 will disable periodic status |
 
-`unsuck\n`
-Tells MCU to set the suck pin to 0
 
-`req_status\n`
-Signal that tells MCU to send back data on the motor (see my_status)
-
-
-`req_periodic_status <period in seconds>\n`
-Request status to be sent periodically. Disable if period is 0.
 
 
 # MCU => PC
 All of these functions are void functions
 
-`my_status <angle0> <angle1> <angle2> <angle3> <are motors moving? (True/False)> <suction status (True/False)> <time (ms)>\n`
-sends status of hopefully everything to pc
+`my_status <angle0> <angle1> <angle2> <angle3> <are motors moving? (1/0)> <suction status (1/0)> <time (ms)>\n`
+sends status of everything to pc
 
 `error <message>\n`
 sends error message to pc
